@@ -1,5 +1,7 @@
+import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:rick_and_morty/custom_grid.dart';
 import 'package:rick_and_morty/model/character.dart';
 import 'package:rick_and_morty/model/episode.dart';
 import 'package:dartx/dartx.dart';
@@ -15,7 +17,160 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: HomePage(),
+      home: TestPage(),
+    );
+  }
+}
+
+class TestPage extends StatefulWidget {
+  const TestPage({Key? key}) : super(key: key);
+
+  @override
+  State<TestPage> createState() => _TestPageState();
+}
+
+class _TestPageState extends State<TestPage> {
+  var items = <Widget>[];
+
+  Future<void> initItems() async {
+    Dio dio = Dio();
+    RestClient client = RestClient(dio);
+    var answer = await client.getAllCharacters();
+    for (var character in answer.characters) {
+      var episode_answer = await dio.get(character.episode[0]);
+      var episode = Episode.fromJson(episode_answer.data);
+
+      items.add(_generateCharacterCard(character, episode));
+    }
+    print("Completed!");
+  }
+
+  void loadMore() {
+    setState(() {
+      // if ((present + perPage) > originalItems.length) {
+      //   items.addAll(originalItems.getRange(present, originalItems.length));
+      // } else {
+      //   items.addAll(originalItems.getRange(present, present + perPage));
+      // }
+      // present = present + perPage;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            sliver: SliverGrid(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return Container(
+                    color: Colors.amber,
+                  );
+                },
+              ),
+              gridDelegate: CustomSliverGridDelegate(
+                  height: 220, width: 600, spacing: 30),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  static Card _generateCharacterCard(Character character, Episode episode) {
+    final Color color;
+    if (character.status == "Alive") {
+      color = Colors.green;
+    } else if (character.status == "Dead") {
+      color = Colors.red;
+    } else if (character.status == "unknown") {
+      color = Colors.grey[400]!;
+    } else {
+      var status = character.status;
+      throw "unexpected error no such status: '$status'";
+    }
+    var status = character.status.capitalize();
+
+    var species = character.species;
+
+    return Card(
+      color: Colors.grey,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(right: 24),
+            child: Image.network(character.image),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Spacer(),
+                Text(
+                  character.name,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: Icon(
+                        Icons.circle,
+                        color: color,
+                        size: 10,
+                      ),
+                    ),
+                    Text("$status - $species",
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 16)),
+                  ],
+                ),
+                const Spacer(),
+                const Text("Last known location:",
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 16)),
+                Text(character.location.name,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 20)),
+                const Spacer(),
+                const Text("First seen in:",
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 16)),
+                Text(episode.name,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 20)),
+                const Spacer(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return Card(
+      color: Color(Random().nextInt(0xFFFFFFFF)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Image.network(
+            "https://rickandmortyapi.com/api/character/avatar/422.jpeg",
+            // fit: BoxFit.scaleDown,
+          ),
+          const Expanded(
+            flex: 3,
+            child: Text(
+              "Some name",
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -30,6 +185,19 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    return GridView.extent(
+      maxCrossAxisExtent: 800,
+      children: [
+        for (int i = 1; i < 10; i++)
+          FutureBuilder(
+            future: _getCharacterAndGenerateCard(i),
+            builder: (context, snapshot) =>
+                snapshot.connectionState == ConnectionState.done
+                    ? snapshot.data as Widget
+                    : const Center(child: CircularProgressIndicator()),
+          )
+      ],
+    );
     return Scaffold(
         body: GridView.builder(
             padding: const EdgeInsets.all(8),
