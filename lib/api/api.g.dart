@@ -19,49 +19,49 @@ class _RestClient implements RestClient {
 
   @override
   Future<Character> getCharacter(id) async {
-    const _extra = <String, dynamic>{};
+    const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
+    final headers = <String, dynamic>{};
+    final data = <String, dynamic>{};
+    final result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<Character>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
+            Options(method: 'GET', headers: headers, extra: extra)
                 .compose(_dio.options, '/character/${id}',
-                    queryParameters: queryParameters, data: _data)
+                    queryParameters: queryParameters, data: data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = Character.fromJson(_result.data!);
+    final value = Character.fromJson(result.data!);
     return value;
   }
 
   @override
   Future<AllCharacterAnswer> getAllCharacters() async {
-    const _extra = <String, dynamic>{};
+    const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
+    final headers = <String, dynamic>{};
+    final data = <String, dynamic>{};
+    final result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<AllCharacterAnswer>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
+            Options(method: 'GET', headers: headers, extra: extra)
                 .compose(_dio.options, '/character',
-                    queryParameters: queryParameters, data: _data)
+                    queryParameters: queryParameters, data: data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = AllCharacterAnswer.fromJson(_result.data!);
+    final value = AllCharacterAnswer.fromJson(result.data!);
     return value;
   }
 
   @override
   Future<Episode> getEpisode(id) async {
-    const _extra = <String, dynamic>{};
+    const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
+    final headers = <String, dynamic>{};
+    final data = <String, dynamic>{};
+    final result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<Episode>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
+            Options(method: 'GET', headers: headers, extra: extra)
                 .compose(_dio.options, '/episode/${id}',
-                    queryParameters: queryParameters, data: _data)
+                    queryParameters: queryParameters, data: data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = Episode.fromJson(_result.data!);
+    final value = Episode.fromJson(result.data!);
     return value;
   }
 
