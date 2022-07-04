@@ -62,12 +62,15 @@ class CharacterCard extends StatelessWidget {
     }
 
     return Card(
+      //TODO remove radius from here
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      //TODO
       color: const Color.fromARGB(255, 60, 62, 68),
       child: Row(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
+              //TODO remove radius from here
               topLeft: Radius.circular(16),
               bottomLeft: Radius.circular(16),
             ),
@@ -188,26 +191,44 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //TODO
       backgroundColor: const Color.fromARGB(255, 32, 35, 41),
       body: CustomScrollView(
         slivers: [
+          const SliverAppBar(
+            expandedHeight: 400,
+            collapsedHeight: 200,
+            // floating: true,
+            // snap: true,
+            // pinned: true,
+            flexibleSpace: Center(
+              child: Text(
+                "The Rick and Morty",
+                style: TextStyle(
+                    fontSize: 100,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
+              ),
+              
+            ),
+            stretch: true,
+            backgroundColor: Colors.white,
+            // flexibleSpace: FlexibleSpaceBar(
+            //   col),
+          ),
           itemsInitialized
               ? SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 24,horizontal: 8),
                   sliver: SliverGrid(
                     delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        if (index < characterCards.length) {
-                          return characterCards[index];
-                        }
-                        return null;
-                      },
+                      (context, index) => characterCards[index],
+                      childCount: characterCards.length,
                     ),
                     gridDelegate: const CustomSliverGridDelegate(
                         height: 220, width: 600, spacing: 30),
                   ),
                 )
-              : const SliverToBoxAdapter(child: CircularProgressIndicator())
+              : const SliverToBoxAdapter(child: CircularProgressIndicator()),
         ],
       ),
     );
