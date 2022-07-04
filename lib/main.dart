@@ -61,16 +61,20 @@ class CharacterCard extends StatelessWidget {
       throw "unexpected error no such status: '$status'";
     }
 
-    // ThemeData(textTheme: )
-
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       color: const Color.fromARGB(255, 60, 62, 68),
       child: Row(
         children: [
-          Image.network(
-            imageURL,
-            fit: BoxFit.fill,
+          ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              bottomLeft: Radius.circular(16),
+            ),
+            child: Image.network(
+              imageURL,
+              fit: BoxFit.fill,
+            ),
           ),
           Expanded(
             child: Padding(
