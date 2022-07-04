@@ -198,9 +198,6 @@ class _HomePageState extends State<HomePage> {
           const SliverAppBar(
             expandedHeight: 400,
             collapsedHeight: 200,
-            // floating: true,
-            // snap: true,
-            // pinned: true,
             flexibleSpace: Center(
               child: Text(
                 "The Rick and Morty",
@@ -211,10 +208,7 @@ class _HomePageState extends State<HomePage> {
               ),
               
             ),
-            stretch: true,
             backgroundColor: Colors.white,
-            // flexibleSpace: FlexibleSpaceBar(
-            //   col),
           ),
           itemsInitialized
               ? SliverPadding(
