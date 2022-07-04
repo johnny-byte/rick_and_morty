@@ -141,6 +141,9 @@ class CharacterCard extends StatelessWidget {
 class _HomePageState extends State<HomePage> {
   var characterCards = <Widget>[];
   bool itemsInitialized = false;
+  
+  bool _loadingInPrgogress = false; 
+  String? _nextLoadingURL = null;
 
   Future<CharacterCard> _loadCharacterCard(Dio dio, Character character) async {
     var episodeAnswer = await dio.get(character.episode[0]);
@@ -167,6 +170,7 @@ class _HomePageState extends State<HomePage> {
       characterCards.add(character);
     }
 
+    _nextLoadingURL = answer.info.next;
     itemsInitialized = true;
     setState(() {});
   }
@@ -177,15 +181,30 @@ class _HomePageState extends State<HomePage> {
     initItems();
   }
 
-  void loadMore() {
-    setState(() {
-      // if ((present + perPage) > originalItems.length) {
-      //   items.addAll(originalItems.getRange(present, originalItems.length));
-      // } else {
-      //   items.addAll(originalItems.getRange(present, present + perPage));
-      // }
-      // present = present + perPage;
-    });
+  void _loadMore() async {
+    if (_nextLoadingURL != null && !_loadingInPrgogress) {
+      _loadingInPrgogress=true;
+      Dio dio = Dio();
+      //TODO
+      // RestClient client = RestClient(dio);
+
+      var answer = await dio.get(_nextLoadingURL!);
+      var allCharacterAnswer = AllCharacterAnswer.fromJson(answer.data);
+
+
+      var characters = Stream.fromFutures(allCharacterAnswer.characters
+          .map((character) => _loadCharacterCard(dio, character)));
+
+      await for (var character in characters) {
+        characterCards.add(character);
+      }
+
+      _nextLoadingURL = allCharacterAnswer.info.next;
+      itemsInitialized = true;
+
+      _loadingInPrgogress=false;
+      setState(() {});
+    }
   }
 
   @override
@@ -193,37 +212,47 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       //TODO
       backgroundColor: const Color.fromARGB(255, 32, 35, 41),
-      body: CustomScrollView(
-        slivers: [
-          const SliverAppBar(
-            expandedHeight: 400,
-            collapsedHeight: 200,
-            flexibleSpace: Center(
-              child: Text(
-                "The Rick and Morty",
-                style: TextStyle(
-                    fontSize: 100,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          if (notification.metrics.pixels >=
+              notification.metrics.maxScrollExtent / 2) {
+            _loadMore();
+          }
+          // print("notification.metrics.atEdge: ${notification.metrics.atEdge}");
+          return true;
+        },
+        child: CustomScrollView(
+          slivers: [
+            const SliverAppBar(
+              expandedHeight: 400,
+              collapsedHeight: 200,
+              flexibleSpace: Center(
+                child: Text(
+                  "The Rick and Morty",
+                  style: TextStyle(
+                      fontSize: 100,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
+                ),
               ),
-              
+              backgroundColor: Colors.white,
             ),
-            backgroundColor: Colors.white,
-          ),
-          itemsInitialized
-              ? SliverPadding(
-                  padding: const EdgeInsets.symmetric(vertical: 24,horizontal: 8),
-                  sliver: SliverGrid(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) => characterCards[index],
-                      childCount: characterCards.length,
+            itemsInitialized
+                ? SliverPadding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
+                    sliver: SliverGrid(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) => characterCards[index],
+                        childCount: characterCards.length,
+                      ),
+                      gridDelegate: const CustomSliverGridDelegate(
+                          height: 220, width: 600, spacing: 30),
                     ),
-                    gridDelegate: const CustomSliverGridDelegate(
-                        height: 220, width: 600, spacing: 30),
-                  ),
-                )
-              : const SliverToBoxAdapter(child: CircularProgressIndicator()),
-        ],
+                  )
+                : const SliverToBoxAdapter(child: CircularProgressIndicator()),
+          ],
+        ),
       ),
     );
   }
