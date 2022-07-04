@@ -141,8 +141,8 @@ class CharacterCard extends StatelessWidget {
 class _HomePageState extends State<HomePage> {
   var characterCards = <Widget>[];
   bool itemsInitialized = false;
-  
-  bool _loadingInPrgogress = false; 
+
+  bool _loadingInPrgogress = false;
   String? _nextLoadingURL = null;
 
   Future<CharacterCard> _loadCharacterCard(Dio dio, Character character) async {
@@ -183,14 +183,13 @@ class _HomePageState extends State<HomePage> {
 
   void _loadMore() async {
     if (_nextLoadingURL != null && !_loadingInPrgogress) {
-      _loadingInPrgogress=true;
+      _loadingInPrgogress = true;
       Dio dio = Dio();
       //TODO
       // RestClient client = RestClient(dio);
 
       var answer = await dio.get(_nextLoadingURL!);
       var allCharacterAnswer = AllCharacterAnswer.fromJson(answer.data);
-
 
       var characters = Stream.fromFutures(allCharacterAnswer.characters
           .map((character) => _loadCharacterCard(dio, character)));
@@ -202,7 +201,7 @@ class _HomePageState extends State<HomePage> {
       _nextLoadingURL = allCharacterAnswer.info.next;
       itemsInitialized = true;
 
-      _loadingInPrgogress=false;
+      _loadingInPrgogress = false;
       setState(() {});
     }
   }
@@ -250,7 +249,14 @@ class _HomePageState extends State<HomePage> {
                           height: 220, width: 600, spacing: 30),
                     ),
                   )
-                : const SliverToBoxAdapter(child: CircularProgressIndicator()),
+                : const SliverFillRemaining(
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        //TODO
+                        color: Colors.amber,
+                      )
+                    ),
+                  ),
           ],
         ),
       ),
