@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 
@@ -23,9 +21,9 @@ class CharacterCardData {
 
 class CharacterCard extends StatelessWidget {
   final CharacterCardData cardData;
-  double? width;
-  double? height;
-  double? radius;
+  final double? width;
+  final double? height;
+  final double? radius;
   final BorderRadius _cardBorderRadius;
   final BorderRadius _imageBorderRadius;
   final bool _isHorizontal;
@@ -82,7 +80,6 @@ class CharacterCard extends StatelessWidget {
           Expanded(
             flex: 3,
             child: Padding(
-              //TODO REMOVE from here
               padding: const EdgeInsets.only(left: 16.0),
               child: _body(context),
             ),
@@ -91,7 +88,6 @@ class CharacterCard extends StatelessWidget {
       );
     }
     return Card(
-      //TODO remove radius from here
       shape: RoundedRectangleBorder(borderRadius: _cardBorderRadius),
       //TODO
       color: const Color.fromARGB(255, 60, 62, 68),

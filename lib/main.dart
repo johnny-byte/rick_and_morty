@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: BrandTheme.defaultTheme,
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }
@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
   bool itemsInitialized = false;
 
   bool _loadingInPrgogress = false;
-  String? _nextLoadingURL = null;
+  String? _nextLoadingURL;
 
   Future<CharacterCardData> _loadCharacterCardData(
       Dio dio, Character character) async {
@@ -250,7 +250,6 @@ class _SliverSmallPageBodyState extends State<SliverSmallPageBody> {
         (BuildContext context, int index) {
           final int itemIndex = index ~/ 2;
           if (index.isEven) {
-            //FIXME
             return CharacterCard.vertical(
               cardData: widget.characterCardsData[itemIndex],
               height: widget.cardHeight,
